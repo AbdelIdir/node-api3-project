@@ -3,6 +3,7 @@ const express = require("express");
 const router = express.Router();
 
 const Users = require("./userDb");
+const Posts = require("../posts/postDb");
 // const {validateUserId} = require("../server");
 // const mw = require("../data/mw");
 // server.use(express.json());
@@ -12,8 +13,20 @@ router.post("/", validateUser, (req, res) => {
   res.json(req.body);
 });
 
-router.post("/:id/posts", (req, res) => {
+router.post("/:id/posts", validateUserId, (req, res) => {
   // do your magic!
+
+  Posts.insert(req.body)
+    .then(userPost => {
+      res.status(200).json(userPost);
+    })
+    .catch(err => {
+      res
+        .status(500)
+        .json({
+          message: "something went wrong while while trying to make a post"
+        });
+    });
 });
 
 router.get("/", (req, res) => {
