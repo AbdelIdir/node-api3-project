@@ -5,6 +5,7 @@ const router = express.Router();
 const Users = require("./userDb");
 // const {validateUserId} = require("../server");
 // const mw = require("../data/mw");
+// server.use(express.json());
 
 router.post("/", validateUser, (req, res) => {
   // do your magic!
@@ -29,7 +30,7 @@ router.get("/", (req, res) => {
 });
 
 router.get("/:id", validateUserId, (req, res) => {
-  res.status(200).json(req.user);
+  res.status(200).json("well done");
 });
 
 router.get("/:id/posts", (req, res) => {
@@ -40,8 +41,14 @@ router.delete("/:id", (req, res) => {
   // do your magic!
 });
 
-router.put("/:id", (req, res) => {
+router.put("/:id", validateUserId, (req, res) => {
   // do your magic!
+  Users.update(req.params.id, req.body)
+    // console.log("put",req.body.name,"id",req.params.id)
+    .then(editedUser => {
+      res.status(200).json(editedUser);
+    })
+    .catch(err => console.log(err));
 });
 
 //custom middleware
@@ -54,7 +61,7 @@ function validateUserId(req, res, next) {
     .then(user => {
       console.log(user);
       if (user) {
-        console.log("user ", typeof user);
+        // console.log("user ", typeof user);
         req.user = user;
         next();
       } else {
@@ -70,7 +77,7 @@ function validateUser(req, res, next) {
   // do your magic!
   const userData = req.body;
 
-  if (userData.name) {
+  if (userData && userData.name) {
     Users.insert(userData)
       .then(newUser => {
         res.status(200).json(newUser);
