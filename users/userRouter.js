@@ -30,15 +30,31 @@ router.get("/", (req, res) => {
 });
 
 router.get("/:id", validateUserId, (req, res) => {
-  res.status(200).json("well done");
+  res.status(200).json(req.user);
 });
 
-router.get("/:id/posts", (req, res) => {
+router.get("/:id/posts", validateUserId, (req, res) => {
   // do your magic!
+  Users.getUserPosts(req.params.id)
+    .then(post => {
+      // console.log(post)
+      res.status(200).json(post);
+    })
+    .catch(err => {
+      res
+        .status(500)
+        .json({ message: "there was an error ,couldnt remove user " });
+    });
 });
 
-router.delete("/:id", (req, res) => {
-  // do your magic!
+router.delete("/:id", validateUserId, (req, res) => {
+  Users.remove(req.params.id)
+    .then(removedPost => {
+      res.status(200).json(removedPost);
+    })
+    .catch(err => {
+      res.status(400).json({ message: "issue" });
+    });
 });
 
 router.put("/:id", validateUserId, (req, res) => {
