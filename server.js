@@ -3,13 +3,15 @@ const helmet = require("helmet");
 const server = express();
 const userRouter = require("./users/userRouter");
 const postsRouter = require("./posts/postRouter");
+const Users = require("./users/userDb");
+
 server.use(express.json());
 
 server.use(helmet());
 
 server.use(logger);
 
-server.use("/api/users", userRouter);
+// server.use("/api/users", userRouter);
 
 server.use("/api/posts", postsRouter);
 
@@ -30,9 +32,7 @@ function logger(req, res, next) {
   next();
 }
 
-const validateUserId = (req, res, next) => {
-  const { id } = req.params.id;
-};
+server.use("/api/users", userRouter);
 
 // server.get("*", (req, res) => {
 //   res.json("something is happening");
