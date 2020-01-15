@@ -13,20 +13,8 @@ router.post("/", validateUser, (req, res) => {
   res.json(req.body);
 });
 
-router.post("/:id/posts", validateUserId, (req, res) => {
-  // do your magic!
-
-  Posts.insert(req.body)
-    .then(userPost => {
-      res.status(200).json(userPost);
-    })
-    .catch(err => {
-      res
-        .status(500)
-        .json({
-          message: "something went wrong while while trying to make a post"
-        });
-    });
+router.post("/:id/posts", validateUserId, validatePost, (req, res) => {
+  res.status(200).json(req.body);
 });
 
 router.get("/", (req, res) => {
@@ -121,7 +109,22 @@ function validateUser(req, res, next) {
 }
 
 function validatePost(req, res, next) {
-  // do your magic!
+  const userData = req.body;
+
+  if (userData && userData.text && userData.user_id) {
+    Posts.insert(req.body)
+      .then(userPost => {
+        next();
+      })
+      .catch(err => {
+        res.status(500).json({
+          message: "something went wrong while while trying to make a post"
+        });
+      });
+    next();
+  } else {
+    res.status(400).json({ message: "missing user data" });
+  }
 }
 
 module.exports = router;
